@@ -9,11 +9,15 @@ const staffRoute = require("./routes/staff.routes.js");
 const attendanceRoute = require("./routes/attendance.routes.js");
 const authRoute = require("./routes/user.routes.js");
 
-app.use(cors({
-  origin: "https://vsdc-frontend-os1m.vercel.app", // Your NEW Vercel URL
-  credentials: true
-}));
+// Change this:
+app.use(cors({ origin: "https://vsdc-frontend-es2k.vercel.app" }));
 
+// To this (allows any of your Vercel deployments):
+app.use(cors({
+  origin: "*", 
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
