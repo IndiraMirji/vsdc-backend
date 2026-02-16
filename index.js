@@ -10,10 +10,10 @@ const attendanceRoute = require("./routes/attendance.routes.js");
 const authRoute = require("./routes/user.routes.js");
 
 app.use(cors({
-  origin: "https://vsdc-frontend-es2k.vercel.app/", // PASTE YOUR ACTUAL VERCEL URL HERE
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: "https://vsdc-frontend-os1m.vercel.app", // Your NEW Vercel URL
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
