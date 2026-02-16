@@ -12,17 +12,27 @@ const authRoute = require("./routes/user.routes.js");
 // Change this:
 app.use(cors({ origin: "https://vsdc-frontend-es2k.vercel.app" }));
 
-// To this (allows any of your Vercel deployments):
-// Use this EXACT block
-app.use(cors({
-  origin: "*", // This tells the backend to trust ANY frontend URL
+const corsOptions = {
+  origin: true, // This automatically reflects the requester's origin (very helpful!)
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
-}));
+};
 
-// Add this right below the cors block to handle preflight manually
-app.options('*', cors());
+// 2. Use the cors middleware with those options
+app.use(cors(corsOptions));
+
+// 3. Handle the "Preflight" (OPTIONS) requests safely
+// This replaces the app.options('*') line that caused your error
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
