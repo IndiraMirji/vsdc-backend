@@ -3,58 +3,61 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080; // Better for Render
 
+// Import Routes
 const staffRoute = require("./routes/staff.routes.js");
 const attendanceRoute = require("./routes/attendance.routes.js");
 const authRoute = require("./routes/user.routes.js");
 
-// Change this:
-app.use(cors({ origin: "https://vsdc-frontend-es2k.vercel.app" }));
-
+// --- CORRECT CORS CONFIG ---
+// 1. Define the options (Allows ANY origin to avoid the es2k vs os1m conflict)
 const corsOptions = {
-  origin: true, // This automatically reflects the requester's origin (very helpful!)
+  origin: true, 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 };
 
-// 2. Use the cors middleware with those options
+// 2. Use it ONCE
 app.use(cors(corsOptions));
 
-// 3. Handle the "Preflight" (OPTIONS) requests safely
-// This replaces the app.options('*') line that caused your error
+// 3. Middleware for Preflight and Headers
 app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || "*");
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
   if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     return res.sendStatus(200);
   }
   next();
 });
+
+// Middleware
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
-//Database Connection
+// Database Connection
 mongoose.connect(process.env.MONGOURI) 
-.then(() => console.log("Mongodb connected"))
-.catch(err => console.log("Connection error:",err));
+  .then(() => console.log("✅ Mongodb connected"))
+  .catch(err => console.log("❌ Connection error:", err));
 
-
-//routes
+// Routes
 app.use("/api/staff", staffRoute);
 app.use("/api/attendance", attendanceRoute);
 app.use("/api/auth", authRoute);
 
+// Error Handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Something went wrong!', error: err.message });
 });
 
-app.get("/", (req,res) =>{
-    res.send("Hi! This is root");
-})
-app.listen(port,() =>{
-    console.log(`Server is running on port ${port}`);
+app.get("/", (req, res) => {
+  res.send("Hi! VSDC Backend is live.");
+});
+
+app.listen(port, () => {
+  console.log(`🚀 Server is running on port ${port}`);
 });
