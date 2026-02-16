@@ -9,7 +9,11 @@ const staffRoute = require("./routes/staff.routes.js");
 const attendanceRoute = require("./routes/attendance.routes.js");
 const authRoute = require("./routes/user.routes.js");
 
-app.use(cors());
+app.use(cors({
+  origin: "https://vsdc-frontend-es2k.vercel.app/", // PASTE YOUR ACTUAL VERCEL URL HERE
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
