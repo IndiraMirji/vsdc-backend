@@ -13,11 +13,16 @@ const authRoute = require("./routes/user.routes.js");
 app.use(cors({ origin: "https://vsdc-frontend-es2k.vercel.app" }));
 
 // To this (allows any of your Vercel deployments):
+// Use this EXACT block
 app.use(cors({
-  origin: "*", 
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: "*", // This tells the backend to trust ANY frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
+
+// Add this right below the cors block to handle preflight manually
+app.options('*', cors());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
